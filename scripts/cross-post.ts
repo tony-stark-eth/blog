@@ -555,9 +555,10 @@ async function main(): Promise<void> {
     // Save state after each post so partial progress is not lost on failure
     saveState(state);
 
-    // Delay between posts to avoid rate limiting
+    // Delay between posts to avoid Dev.to rate limiting (30s cooldown)
     if (postsToProcess.indexOf(post) < postsToProcess.length - 1) {
-      await new Promise((resolve) => setTimeout(resolve, 3000));
+      console.log("  Waiting 35s for rate limit...");
+      await new Promise((resolve) => setTimeout(resolve, 35000));
     }
   }
 
