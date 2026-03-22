@@ -46,5 +46,5 @@ Lies `.claude/technical.md` für Code-Konventionen im Astro-Projekt.
 - Englisch = Default Locale (kein URL-Prefix: `/blog/post-slug/`)
 - Deutsch = `/de/blog/post-slug/`
 - Gleiche Dateinamen in `en/` und `de/` verknüpfen Sprachversionen
-- Nicht jeder Post muss in beiden Sprachen existieren
+- **Jeder Post MUSS in beiden Sprachen existieren** (EN + DE)
 - Cross-Post nur EN-Posts (Dev.to/Hashnode sind englischsprachig)
