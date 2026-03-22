@@ -11,7 +11,10 @@ const allPosts = await getCollection('blog', ({ data }) => {
 });
 
 const latestPosts = allPosts
-  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .sort((a, b) => {
+    if (a.data.sticky !== b.data.sticky) return a.data.sticky ? -1 : 1;
+    return b.data.date.valueOf() - a.data.date.valueOf();
+  })
   .slice(0, 3);
 ---
 
