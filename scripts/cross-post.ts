@@ -293,7 +293,7 @@ async function publishToDevto(post: Post, canonicalUrl: string, markdown: string
       title: post.frontmatter.title,
       body_markdown: markdown,
       published: true,
-      tags: (post.frontmatter.tags ?? []).slice(0, 4),
+      tags: (post.frontmatter.tags ?? []).slice(0, 4).map((t) => t.replace(/-/g, "")),
       canonical_url: canonicalUrl,
       description: post.frontmatter.description ?? "",
     },
@@ -328,7 +328,7 @@ async function updateOnDevto(articleId: number, post: Post, canonicalUrl: string
       title: post.frontmatter.title,
       body_markdown: markdown,
       published: true,
-      tags: (post.frontmatter.tags ?? []).slice(0, 4),
+      tags: (post.frontmatter.tags ?? []).slice(0, 4).map((t) => t.replace(/-/g, "")),
       canonical_url: canonicalUrl,
       description: post.frontmatter.description ?? "",
     },
@@ -554,6 +554,11 @@ async function main(): Promise<void> {
 
     // Save state after each post so partial progress is not lost on failure
     saveState(state);
+
+    // Delay between posts to avoid rate limiting
+    if (postsToProcess.indexOf(post) < postsToProcess.length - 1) {
+      await new Promise((resolve) => setTimeout(resolve, 3000));
+    }
   }
 
   console.log("\nDone. State saved to", STATE_FILE);
