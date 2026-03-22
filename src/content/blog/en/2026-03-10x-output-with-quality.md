@@ -7,9 +7,6 @@ locale: "en"
 translationSlug: "2026-03-10x-output-with-quality"
 draft: false
 sticky: true
-cover:
-  src: "/images/blog/10x-output-quality.png"
-  alt: "Terminal showing PHPStan level max passing alongside Claude Code output"
 ---
 
 Last weekend I shipped two repositories from scratch: an [opinionated full-stack template](https://github.com/tony-stark-eth/template-symfony-sveltekit) for PHP 8.4 + Symfony 8 + SvelteKit 2, and a [complete habit tracking application](https://github.com/tony-stark-eth/smarthabit-tracker) built on top of it. 51 commits, 6 GitHub Actions workflows, 10 PHPStan extensions configured at level max, Docker multi-stage builds, OpenTofu infrastructure — all passing CI.

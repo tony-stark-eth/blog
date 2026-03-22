@@ -7,9 +7,6 @@ locale: "de"
 translationSlug: "2026-03-10x-output-with-quality"
 draft: false
 sticky: true
-cover:
-  src: "/images/blog/10x-output-quality.png"
-  alt: "Terminal mit PHPStan level max bestanden neben Claude Code Output"
 ---
 
 Letztes Wochenende habe ich zwei Repositories von Grund auf gebaut: ein [opinionated Full-Stack-Template](https://github.com/tony-stark-eth/template-symfony-sveltekit) für PHP 8.4 + Symfony 8 + SvelteKit 2, und eine [vollständige Habit-Tracking-Anwendung](https://github.com/tony-stark-eth/smarthabit-tracker) darauf aufgebaut. 51 Commits, 6 GitHub Actions Workflows, 10 PHPStan-Extensions auf level max konfiguriert, Docker Multi-Stage Builds, OpenTofu-Infrastruktur — alles mit grünem CI.
