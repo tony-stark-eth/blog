@@ -1,0 +1,132 @@
+---
+import { useTranslations } from '../i18n/ui';
+import type { Locale } from '../i18n/ui';
+
+interface Heading {
+  depth: number;
+  slug: string;
+  text: string;
+}
+
+interface Props {
+  headings: Heading[];
+  locale?: Locale;
+}
+
+const { headings, locale = 'en' } = Astro.props;
+const t = useTranslations(locale);
+
+// Only H2 and H3
+const filteredHeadings = headings.filter((h) => h.depth === 2 || h.depth === 3);
+---
+
+{filteredHeadings.length > 0 && (
+  <nav
+    id="toc"
+    aria-label={t('toc.title')}
+    class="not-prose"
+  >
+    <details class="lg:hidden mb-6 border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden" open={false}>
+      <summary class="px-4 py-3 font-semibold text-sm cursor-pointer select-none bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors list-none flex items-center justify-between">
+        {t('toc.title')}
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="16"
+          height="16"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          class="transition-transform details-chevron"
+          aria-hidden="true"
+        >
+          <polyline points="6 9 12 15 18 9" />
+        </svg>
+      </summary>
+      <ol class="px-4 py-3 space-y-1 text-sm">
+        {filteredHeadings.map((heading) => (
+          <li class:list={[heading.depth === 3 && 'ml-4']}>
+            <a
+              href={`#${heading.slug}`}
+              class="block py-0.5 text-gray-600 dark:text-gray-400 hover:text-brand-500 dark:hover:text-brand-500 transition-colors"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </details>
+
+    <!-- Desktop sticky TOC -->
+    <aside class="hidden lg:block sticky top-24 max-h-[calc(100vh-6rem)] overflow-y-auto">
+      <p class="text-xs font-semibold uppercase tracking-wider text-gray-500 dark:text-gray-400 mb-3">
+        {t('toc.title')}
+      </p>
+      <ol class="space-y-1 text-sm border-l border-gray-200 dark:border-gray-700">
+        {filteredHeadings.map((heading) => (
+          <li class:list={[heading.depth === 3 && 'ml-3']}>
+            <a
+              href={`#${heading.slug}`}
+              data-toc-link={heading.slug}
+              class="block py-0.5 pl-3 -ml-px border-l-2 border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 hover:border-gray-400 dark:hover:border-gray-500 transition-colors toc-link"
+            >
+              {heading.text}
+            </a>
+          </li>
+        ))}
+      </ol>
+    </aside>
+  </nav>
+)}
+
+<script>
+  function initToc() {
+    const tocLinks = document.querySelectorAll<HTMLAnchorElement>('.toc-link');
+    if (tocLinks.length === 0) return;
+
+    const headingIds = Array.from(tocLinks).map((link) => {
+      const slug = link.getAttribute('data-toc-link');
+      return slug ?? '';
+    }).filter(Boolean);
+
+    const headingElements = headingIds
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+
+    function setActive(id: string) {
+      tocLinks.forEach((link) => {
+        const slug = link.getAttribute('data-toc-link');
+        if (slug === id) {
+          link.classList.add('border-brand-500', 'text-brand-500', 'dark:text-brand-500');
+          link.classList.remove('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+        } else {
+          link.classList.remove('border-brand-500', 'text-brand-500', 'dark:text-brand-500');
+          link.classList.add('border-transparent', 'text-gray-600', 'dark:text-gray-400');
+        }
+      });
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) {
+            setActive(entry.target.id);
+            break;
+          }
+        }
+      },
+      {
+        rootMargin: '-80px 0px -60% 0px',
+        threshold: 0,
+      }
+    );
+
+    headingElements.forEach((el) => observer.observe(el));
+  }
+
+  // Run on initial load and after navigation (view transitions)
+  document.addEventListener('DOMContentLoaded', initToc);
+  document.addEventListener('astro:page-load', initToc);
+</script>

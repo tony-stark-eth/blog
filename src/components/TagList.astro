@@ -1,0 +1,28 @@
+---
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  tags: string[];
+  locale?: Locale;
+}
+
+const { tags, locale = 'en' } = Astro.props;
+
+function tagHref(tag: string): string {
+  const base = locale === 'de' ? '/de/blog/tags/' : '/blog/tags/';
+  return `${base}${tag}/`;
+}
+---
+
+<ul class="flex flex-wrap gap-2 list-none p-0 m-0">
+  {tags.map((tag) => (
+    <li>
+      <a
+        href={tagHref(tag)}
+        class="inline-block px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-brand-500 hover:text-white dark:hover:bg-brand-500 dark:hover:text-white transition-colors"
+      >
+        #{tag}
+      </a>
+    </li>
+  ))}
+</ul>

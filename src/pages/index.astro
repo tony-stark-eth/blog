@@ -1,0 +1,82 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import PostCard from '../components/PostCard.astro';
+import { useTranslations } from '../i18n/ui';
+
+const t = useTranslations('en');
+
+const allPosts = await getCollection('blog', ({ data }) => {
+  return data.locale === 'en' && !data.draft;
+});
+
+const latestPosts = allPosts
+  .sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf())
+  .slice(0, 3);
+---
+
+<BaseLayout locale="en" title="Building in Public" description="A developer blog about building things in public, sharing learnings and shipping software.">
+  <section class="py-16 md:py-24">
+    <h1 class="text-4xl md:text-5xl font-bold text-zinc-900 dark:text-zinc-100 mb-4">
+      Hi, I'm Kevin Mauel
+    </h1>
+    <p class="text-xl text-zinc-600 dark:text-zinc-400 mb-8 max-w-2xl">
+      Building in public — sharing what I learn as I build. PHP/Symfony, TypeScript/Svelte, AI tooling, and the craft of shipping software.
+    </p>
+    <div class="flex flex-wrap gap-4">
+      <a
+        href="https://github.com/tony-stark-eth"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-zinc-900 dark:bg-zinc-100 text-zinc-100 dark:text-zinc-900 font-medium hover:opacity-80 transition-opacity text-sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+      <a
+        href="https://twitter.com/tonystarketh"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 font-medium hover:border-zinc-500 dark:hover:border-zinc-400 transition-colors text-sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        Twitter / X
+      </a>
+      <a
+        href="https://linkedin.com/in/kevin-mauel"
+        class="inline-flex items-center gap-2 px-4 py-2 rounded-lg border border-zinc-300 dark:border-zinc-600 text-zinc-700 dark:text-zinc-300 font-medium hover:border-zinc-500 dark:hover:border-zinc-400 transition-colors text-sm"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        LinkedIn
+      </a>
+    </div>
+  </section>
+
+  {latestPosts.length > 0 && (
+    <section class="py-8">
+      <div class="flex items-center justify-between mb-8">
+        <h2 class="text-2xl font-bold text-zinc-900 dark:text-zinc-100">Latest posts</h2>
+        <a
+          href="/blog/"
+          class="text-sm text-zinc-600 dark:text-zinc-400 hover:text-zinc-900 dark:hover:text-zinc-100 transition-colors"
+        >
+          {t('blog.allPosts')} →
+        </a>
+      </div>
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {latestPosts.map((post) => {
+          const slug = post.id.replace(/^en\//, '').replace(/\.mdx?$/, '');
+          return (
+            <PostCard
+              title={post.data.title}
+              description={post.data.description}
+              date={post.data.date}
+              tags={post.data.tags}
+              slug={slug}
+              locale="en"
+            />
+          );
+        })}
+      </div>
+    </section>
+  )}
+</BaseLayout>

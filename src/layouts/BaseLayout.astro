@@ -1,0 +1,181 @@
+---
+import '@fontsource/inter/400.css';
+import '@fontsource/inter/600.css';
+import '@fontsource/inter/700.css';
+import '@fontsource-variable/jetbrains-mono';
+import '../styles/global.css';
+import DarkModeToggle from '../components/DarkModeToggle.astro';
+import LanguageSwitcher from '../components/LanguageSwitcher.astro';
+import { useTranslations } from '../i18n/ui';
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  title: string;
+  description: string;
+  locale?: Locale;
+  ogImage?: string;
+  canonicalUrl?: string;
+  alternateLocaleUrl?: string;
+}
+
+const {
+  title,
+  description,
+  locale = 'en',
+  ogImage,
+  canonicalUrl = Astro.url.href,
+  alternateLocaleUrl,
+} = Astro.props;
+
+const t = useTranslations(locale);
+const siteUrl = Astro.site ?? new URL('https://blog.tony-stark.xyz');
+const fullTitle = `${title} | Blog`;
+const ogImageUrl = ogImage ?? `${siteUrl}favicon.png`;
+
+const currentPath = Astro.url.pathname;
+const alternateLang: Locale = locale === 'en' ? 'de' : 'en';
+const ogLocale = locale === 'de' ? 'de_DE' : 'en_US';
+const alternateOgLocale = locale === 'de' ? 'en_US' : 'de_DE';
+---
+
+<!doctype html>
+<html lang={locale} class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <link rel="canonical" href={canonicalUrl} />
+
+    {alternateLocaleUrl && (
+      <>
+        <link
+          rel="alternate"
+          hreflang={locale}
+          href={canonicalUrl}
+        />
+        <link
+          rel="alternate"
+          hreflang={alternateLang}
+          href={alternateLocaleUrl}
+        />
+        <link
+          rel="alternate"
+          hreflang="x-default"
+          href={locale === 'en' ? canonicalUrl : alternateLocaleUrl}
+        />
+      </>
+    )}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="article" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content="Blog" />
+    <meta property="og:locale" content={ogLocale} />
+    {alternateLocaleUrl && (
+      <meta property="og:locale:alternate" content={alternateOgLocale} />
+    )}
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <!-- RSS Autodiscovery -->
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Blog (EN)"
+      href="/rss.xml"
+    />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title="Blog (DE)"
+      href="/de/rss.xml"
+    />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+
+    <!-- Dark mode: set class before render to prevent FOUC -->
+    <script is:inline>
+      (function () {
+        const stored = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        if (stored === 'dark' || (!stored && prefersDark)) {
+          document.documentElement.classList.add('dark');
+        }
+      })();
+    </script>
+
+    <!-- Slot for additional head content (e.g. JSON-LD from PostLayout) -->
+    <slot name="head" />
+  </head>
+
+  <body class="bg-white dark:bg-gray-950 text-gray-900 dark:text-gray-100 font-sans antialiased transition-colors duration-200 min-h-screen flex flex-col">
+    <header class="sticky top-0 z-50 border-b border-gray-200 dark:border-gray-800 bg-white/90 dark:bg-gray-950/90 backdrop-blur-sm">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <nav class="flex items-center justify-between h-14" aria-label="Main navigation">
+          <div class="flex items-center gap-6">
+            <a
+              href={locale === 'de' ? '/de/' : '/'}
+              class="font-semibold text-gray-900 dark:text-gray-100 hover:text-brand-500 dark:hover:text-brand-500 transition-colors"
+            >
+              {t('nav.home')}
+            </a>
+            <a
+              href={locale === 'de' ? '/de/blog/' : '/blog/'}
+              class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              {t('nav.blog')}
+            </a>
+          </div>
+
+          <div class="flex items-center gap-4">
+            <LanguageSwitcher currentPath={currentPath} currentLocale={locale} />
+            <DarkModeToggle />
+          </div>
+        </nav>
+      </div>
+    </header>
+
+    <main class="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+      <slot />
+    </main>
+
+    <footer class="border-t border-gray-200 dark:border-gray-800 mt-auto">
+      <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
+          {t('footer.builtWith')}
+          {' '}
+          <a
+            href="https://astro.build"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-brand-500 transition-colors"
+          >
+            Astro
+          </a>
+          {' & '}
+          <a
+            href="https://tailwindcss.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="hover:text-brand-500 transition-colors"
+          >
+            Tailwind CSS
+          </a>
+        </p>
+      </div>
+    </footer>
+  </body>
+</html>

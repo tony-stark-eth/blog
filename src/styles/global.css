@@ -1,0 +1,10 @@
+@import "tailwindcss";
+
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-brand-500: oklch(0.55 0.15 250);
+  --color-brand-600: oklch(0.45 0.15 250);
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono Variable', monospace;
+}

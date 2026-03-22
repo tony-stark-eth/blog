@@ -1,0 +1,55 @@
+---
+import { getCollection, render } from 'astro:content';
+import PostLayout from '../../layouts/PostLayout.astro';
+
+export async function getStaticPaths() {
+  const allPosts = await getCollection('blog', ({ data }) => {
+    return data.locale === 'en' && !data.draft;
+  });
+
+  const dePosts = await getCollection('blog', ({ data }) => {
+    return data.locale === 'de';
+  });
+
+  const deFilenames = new Set(dePosts.map((p) => p.id.replace(/^de\//, '')));
+
+  return allPosts.map((post) => {
+    const filename = post.id.replace(/^en\//, '');
+    const slug = filename.replace(/\.mdx?$/, '');
+    const hasDeTranslation = deFilenames.has(filename);
+
+    return {
+      params: { slug },
+      props: {
+        post,
+        translationSlug: hasDeTranslation ? slug : undefined,
+      },
+    };
+  });
+}
+
+type BlogCollection = Awaited<ReturnType<typeof getCollection<'blog'>>>;
+
+interface Props {
+  post: BlogCollection[number];
+  translationSlug: string | undefined;
+}
+
+const { post, translationSlug } = Astro.props;
+const { Content, headings } = await render(post);
+---
+
+<PostLayout
+  locale="en"
+  title={post.data.title}
+  description={post.data.description}
+  date={post.data.date}
+  updated={post.data.updated}
+  tags={post.data.tags}
+  cover={post.data.cover}
+  translationSlug={translationSlug}
+  headings={headings}
+  body={post.body ?? ''}
+>
+  <Content />
+</PostLayout>

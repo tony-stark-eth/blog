@@ -1,0 +1,51 @@
+---
+import type { Locale } from '../i18n/ui';
+
+interface Props {
+  currentPath: string;
+  currentLocale: Locale;
+}
+
+const { currentPath, currentLocale } = Astro.props;
+
+function getAlternatePath(path: string, locale: Locale): string {
+  if (locale === 'de') {
+    // Remove /de/ prefix to get EN path
+    return path.replace(/^\/de/, '') || '/';
+  }
+  // Add /de/ prefix to get DE path
+  return `/de${path}`;
+}
+
+const alternatePath = getAlternatePath(currentPath, currentLocale);
+const enPath = currentLocale === 'en' ? currentPath : alternatePath;
+const dePath = currentLocale === 'de' ? currentPath : alternatePath;
+---
+
+<div class="flex items-center gap-1 text-sm" aria-label="Language switcher">
+  <a
+    href={enPath}
+    aria-current={currentLocale === 'en' ? 'true' : undefined}
+    class:list={[
+      'px-1.5 py-0.5 rounded transition-colors',
+      currentLocale === 'en'
+        ? 'font-semibold text-gray-900 dark:text-gray-100 pointer-events-none'
+        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100',
+    ]}
+  >
+    EN
+  </a>
+  <span class="text-gray-300 dark:text-gray-600" aria-hidden="true">|</span>
+  <a
+    href={dePath}
+    aria-current={currentLocale === 'de' ? 'true' : undefined}
+    class:list={[
+      'px-1.5 py-0.5 rounded transition-colors',
+      currentLocale === 'de'
+        ? 'font-semibold text-gray-900 dark:text-gray-100 pointer-events-none'
+        : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100',
+    ]}
+  >
+    DE
+  </a>
+</div>
