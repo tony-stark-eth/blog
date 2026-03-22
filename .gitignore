@@ -22,3 +22,16 @@ pnpm-debug.log*
 
 # jetbrains setting folder
 .idea/
+
+# planning docs (not part of the blog source)
+PLAN.md
+setup.md
+seo.md
+cross-posting.md
+claude-guidelines.md
+content-strategy.md
+task_plan.md
+findings.md
+progress.md
+blog-plan.zip
+2026-03-10x-output-with-quality.md
