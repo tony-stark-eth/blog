@@ -1,10 +1,10 @@
 name: Cross-Post
 
 on:
-  workflow_run:
-    workflows: ["Deploy"]
-    types: [completed]
+  push:
     branches: [main]
+    paths:
+      - 'src/content/blog/en/**'
   workflow_dispatch:
     inputs:
       post_slug:
@@ -17,7 +17,6 @@ permissions:
 jobs:
   cross-post:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     steps:
       - uses: actions/checkout@v4
         with:
