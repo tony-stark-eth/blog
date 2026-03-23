@@ -138,6 +138,12 @@ const alternateOgLocale = locale === 'de' ? 'en_US' : 'de_DE';
             >
               {t('nav.blog')}
             </a>
+            <a
+              href={locale === 'de' ? '/de/personal/' : '/personal/'}
+              class="text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              {t('nav.personal')}
+            </a>
           </div>
 
           <div class="flex items-center gap-4">

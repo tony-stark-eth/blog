@@ -11,6 +11,7 @@ export const ui = {
   en: {
     'nav.home': 'Home',
     'nav.blog': 'Blog',
+    'nav.personal': 'Personal',
     'blog.readMore': 'Read more',
     'blog.publishedOn': 'Published on',
     'blog.updatedOn': 'Updated on',
@@ -27,6 +28,7 @@ export const ui = {
   de: {
     'nav.home': 'Start',
     'nav.blog': 'Blog',
+    'nav.personal': 'Persönliches',
     'blog.readMore': 'Weiterlesen',
     'blog.publishedOn': 'Veröffentlicht am',
     'blog.updatedOn': 'Aktualisiert am',

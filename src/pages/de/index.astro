@@ -7,7 +7,7 @@ import { useTranslations } from '../../i18n/ui';
 const t = useTranslations('de');
 
 const allPosts = await getCollection('blog', ({ data }) => {
-  return data.locale === 'de' && !data.draft;
+  return data.locale === 'de' && !data.draft && data.category === 'tech';
 });
 
 const latestPosts = allPosts

@@ -4,7 +4,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import PostCard from '../../../components/PostCard.astro';
 
 const allPosts = await getCollection('blog', ({ data }) => {
-  return data.locale === 'de' && !data.draft && data.category === 'tech';
+  return data.locale === 'de' && !data.draft && data.category === 'personal';
 });
 
 const posts = allPosts.sort((a, b) => {
@@ -13,9 +13,10 @@ const posts = allPosts.sort((a, b) => {
 });
 ---
 
-<BaseLayout locale="de" title="Blog" description="Artikel über Softwareentwicklung, Symfony, TypeScript, AI-Tools und das Bauen in der Öffentlichkeit.">
+<BaseLayout locale="de" title="Persönliches" description="Persönliche Geschichten, Gedanken und das Leben jenseits von Code.">
   <section class="py-12">
-    <h1 class="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-10">Blog</h1>
+    <h1 class="text-4xl font-bold text-zinc-900 dark:text-zinc-100 mb-2">Persönliches</h1>
+    <p class="text-zinc-500 dark:text-zinc-400 mb-10">Leben jenseits von Code — Geschichten, Gedanken und die menschliche Seite des Bauens.</p>
     {posts.length === 0 ? (
       <p class="text-zinc-500 dark:text-zinc-400">Noch keine Beiträge. Bald mehr.</p>
     ) : (

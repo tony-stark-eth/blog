@@ -41,6 +41,12 @@ Lies `.claude/technical.md` für Code-Konventionen im Astro-Projekt.
 - KEIN `any` in TypeScript — nie, auch nicht als Workaround
 - KEIN `client:*` Directive außer wenn Interaktivität zwingend nötig (Toggle, Copy Button)
 
+## Kategorien
+
+- `category: "tech"` (Default) — technische Posts, werden cross-gepostet
+- `category: "personal"` — persönliche Posts, KEIN Cross-Posting, eigene `/personal/` Seite
+- Tech und Personal Posts werden NIE gemischt auf der gleichen Listing-Seite
+
 ## i18n
 
 - Englisch = Default Locale (kein URL-Prefix: `/blog/post-slug/`)

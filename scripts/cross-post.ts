@@ -12,6 +12,7 @@ interface PostFrontmatter {
   tags: string[];
   locale: string;
   draft?: boolean;
+  category?: string;
   translationSlug?: string;
   cover?: {
     src: string;
@@ -235,6 +236,10 @@ function loadPosts(): Post[] {
       const { frontmatter, body } = parseFrontmatter(raw);
 
       if (frontmatter.draft) {
+        continue;
+      }
+
+      if (frontmatter.category === "personal") {
         continue;
       }
 
@@ -563,6 +568,12 @@ async function main(): Promise<void> {
   }
 
   console.log("\nDone. State saved to", STATE_FILE);
+
+  // Medium reminder (no API — must import manually)
+  const newPosts = postsToProcess.filter((p) => !state[p.slug]?.devto || !state[p.slug]?.hashnode);
+  if (newPosts.length === 0 && postsToProcess.length > 0) {
+    console.log("\nMedium reminder: Import new posts manually at https://medium.com/me/stories → Import a story → paste the canonical URL. Medium auto-sets the canonical.");
+  }
 
   if (hasErrors) {
     process.exit(1);
