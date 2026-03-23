@@ -160,27 +160,35 @@ const alternateOgLocale = locale === 'de' ? 'en_US' : 'de_DE';
 
     <footer class="border-t border-gray-200 dark:border-gray-800 mt-auto">
       <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        <p class="text-sm text-gray-500 dark:text-gray-400 text-center">
-          {t('footer.builtWith')}
-          {' '}
+        <div class="flex flex-col sm:flex-row items-center justify-between gap-2">
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            {t('footer.builtWith')}
+            {' '}
+            <a
+              href="https://astro.build"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-brand-500 transition-colors"
+            >
+              Astro
+            </a>
+            {' & '}
+            <a
+              href="https://tailwindcss.com"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="hover:text-brand-500 transition-colors"
+            >
+              Tailwind CSS
+            </a>
+          </p>
           <a
-            href="https://astro.build"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-brand-500 transition-colors"
+            href={locale === 'de' ? '/de/impressum/' : '/imprint/'}
+            class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
           >
-            Astro
+            {locale === 'de' ? 'Impressum' : 'Imprint'}
           </a>
-          {' & '}
-          <a
-            href="https://tailwindcss.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="hover:text-brand-500 transition-colors"
-          >
-            Tailwind CSS
-          </a>
-        </p>
+        </div>
       </div>
     </footer>
   </body>
