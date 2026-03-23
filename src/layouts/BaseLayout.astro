@@ -182,12 +182,20 @@ const alternateOgLocale = locale === 'de' ? 'en_US' : 'de_DE';
               Tailwind CSS
             </a>
           </p>
-          <a
-            href={locale === 'de' ? '/de/impressum/' : '/imprint/'}
-            class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
-          >
-            {locale === 'de' ? 'Impressum' : 'Imprint'}
-          </a>
+          <div class="flex items-center gap-4">
+            <a
+              href={locale === 'de' ? '/de/impressum/' : '/imprint/'}
+              class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              {locale === 'de' ? 'Impressum' : 'Imprint'}
+            </a>
+            <a
+              href={locale === 'de' ? '/de/datenschutz/' : '/privacy/'}
+              class="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 transition-colors"
+            >
+              {locale === 'de' ? 'Datenschutz' : 'Privacy'}
+            </a>
+          </div>
         </div>
       </div>
     </footer>
