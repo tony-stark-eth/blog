@@ -76,8 +76,8 @@ interface HashnodePublishVariables {
 }
 
 interface HashnodeUpdateVariables {
-  id: string;
   input: {
+    id: string;
     title: string;
     contentMarkdown: string;
     tags: Array<{ name: string; slug: string }>;
@@ -414,8 +414,8 @@ async function publishToHashnode(post: Post, canonicalUrl: string, markdown: str
 
 async function updateOnHashnode(postId: string, post: Post, canonicalUrl: string, markdown: string): Promise<void> {
   const mutation = `
-    mutation UpdatePost($id: ObjectId!, $input: UpdatePostInput!) {
-      updatePost(id: $id, input: $input) {
+    mutation UpdatePost($input: UpdatePostInput!) {
+      updatePost(input: $input) {
         post {
           id
           url
@@ -425,8 +425,8 @@ async function updateOnHashnode(postId: string, post: Post, canonicalUrl: string
   `;
 
   const variables: HashnodeUpdateVariables = {
-    id: postId,
     input: {
+      id: postId,
       title: post.frontmatter.title,
       contentMarkdown: markdown,
       tags: (post.frontmatter.tags ?? []).map((t) => ({
