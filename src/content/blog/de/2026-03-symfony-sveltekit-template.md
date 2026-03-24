@@ -1,7 +1,7 @@
 ---
 title: "Mein Symfony + SvelteKit Template mit 10 PHPStan-Erweiterungen"
 description: "Ein Full-Stack-Template für PHP 8.4 + Symfony 8 + SvelteKit 2 mit Static Analysis auf Level max, Mutation Testing, Architekturtests und CI ab Commit null."
-date: 2026-03-29
+date: 2026-03-23
 tags: ["symfony", "phpstan", "sveltekit", "open-source", "developer-tools"]
 locale: "de"
 translationSlug: "2026-03-symfony-sveltekit-template"

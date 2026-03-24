@@ -1,7 +1,7 @@
 ---
 title: "From Template to Production App in a Weekend"
 description: "How I built SmartHabit Tracker — adaptive notifications, real-time sync, multi-transport push — on top of a quality-first Symfony template."
-date: 2026-04-05
+date: 2026-03-24
 tags: ["symfony", "pwa", "open-source", "side-project", "real-time"]
 locale: "en"
 translationSlug: "2026-04-smarthabit-tracker"

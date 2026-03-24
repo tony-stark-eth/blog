@@ -1,7 +1,7 @@
 ---
 title: "How Anime Helped Me Through Depression — And Still Does"
 description: "A senior developer's honest account of depression, numbness, and finding emotional access through anime. Not escapism — the opposite."
-date: 2026-03-23
+date: 2026-03-24
 tags: ["mental-health", "anime", "depression", "developer-life"]
 locale: "en"
 category: "personal"

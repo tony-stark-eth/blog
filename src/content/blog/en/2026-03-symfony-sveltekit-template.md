@@ -1,7 +1,7 @@
 ---
 title: "My Opinionated Symfony + SvelteKit Template with 10 PHPStan Extensions"
 description: "A full-stack template for PHP 8.4 + Symfony 8 + SvelteKit 2 with level max static analysis, mutation testing, architecture tests, and CI from commit zero."
-date: 2026-03-29
+date: 2026-03-23
 tags: ["symfony", "phpstan", "sveltekit", "open-source", "developer-tools"]
 locale: "en"
 translationSlug: "2026-03-symfony-sveltekit-template"
