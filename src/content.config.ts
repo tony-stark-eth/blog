@@ -13,6 +13,7 @@ const blog = defineCollection({
     draft: z.boolean().default(false),
     sticky: z.boolean().default(false),
     category: z.enum(['tech', 'personal']).default('tech'),
+    crossPost: z.boolean().default(false),
     locale: z.enum(['en', 'de']),
     translationSlug: z.string().optional(),
     cover: z

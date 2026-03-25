@@ -239,7 +239,7 @@ function loadPosts(): Post[] {
         continue;
       }
 
-      if (frontmatter.category === "personal") {
+      if (frontmatter.category === "personal" && !frontmatter.crossPost) {
         continue;
       }
 
