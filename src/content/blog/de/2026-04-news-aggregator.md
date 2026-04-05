@@ -1,6 +1,6 @@
 ---
 title: "Ein AI News Aggregator, der auch ohne AI funktioniert"
-description: "Wie ich einen selbstgehosteten RSS-Aggregator mit AI-Kategorisierung und Smart Alerts gebaut habe — und warum regelbasierter Fallback ihn erst zuverlässig macht."
+description: "Selbstgehosteter RSS-Aggregator mit AI-Kategorisierung und Smart Alerts — warum regelbasierter Fallback ihn erst zuverlässig macht."
 date: 2026-04-05
 tags: ["symfony", "ai", "open-source", "self-hosted", "rss"]
 locale: "de"
