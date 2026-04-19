@@ -13,6 +13,7 @@ interface PostFrontmatter {
   locale: string;
   draft?: boolean;
   category?: string;
+  crossPost?: boolean;
   translationSlug?: string;
   cover?: {
     src: string;
