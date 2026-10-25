@@ -32,6 +32,8 @@ interface DevtoState {
   publishedAt: string;
 }
 
+// Legacy: Hashnode entries stay in the state file, the API is no longer called
+// (Hashnode put its GraphQL API behind a paid Pro plan in May 2026).
 interface HashnodeState {
   id: string;
   publishedAt: string;
@@ -65,48 +67,12 @@ interface DevtoApiResponse {
   status?: string;
 }
 
-interface HashnodePublishVariables {
-  input: {
-    title: string;
-    contentMarkdown: string;
-    publicationId: string;
-    tags: Array<{ name: string; slug: string }>;
-    originalArticleURL: string;
-    subtitle: string;
-  };
-}
-
-interface HashnodeUpdateVariables {
-  input: {
-    id: string;
-    title: string;
-    contentMarkdown: string;
-    tags: Array<{ name: string; slug: string }>;
-    originalArticleURL: string;
-    subtitle: string;
-  };
-}
-
-interface HashnodeApiResponse {
-  data?: {
-    publishPost?: {
-      post: { id: string; url: string };
-    };
-    updatePost?: {
-      post: { id: string; url: string };
-    };
-  };
-  errors?: Array<{ message: string }>;
-}
-
 // ---------------------------------------------------------------------------
 // Config & env
 // ---------------------------------------------------------------------------
 
 const SITE_URL = (process.env.SITE_URL ?? "").replace(/\/$/, "");
 const DEVTO_API_KEY = process.env.DEVTO_API_KEY ?? "";
-const HASHNODE_PAT = process.env.HASHNODE_PAT ?? "";
-const HASHNODE_PUBLICATION_ID = process.env.HASHNODE_PUBLICATION_ID ?? "";
 
 const STATE_FILE = ".cross-post-state.json";
 const CONTENT_DIR = "src/content/blog/en";
@@ -356,111 +322,6 @@ async function updateOnDevto(articleId: number, post: Post, canonicalUrl: string
 }
 
 // ---------------------------------------------------------------------------
-// Hashnode GraphQL API
-// ---------------------------------------------------------------------------
-
-async function publishToHashnode(post: Post, canonicalUrl: string, markdown: string): Promise<string> {
-  const mutation = `
-    mutation PublishPost($input: PublishPostInput!) {
-      publishPost(input: $input) {
-        post {
-          id
-          url
-        }
-      }
-    }
-  `;
-
-  const variables: HashnodePublishVariables = {
-    input: {
-      title: post.frontmatter.title,
-      contentMarkdown: markdown,
-      publicationId: HASHNODE_PUBLICATION_ID,
-      tags: (post.frontmatter.tags ?? []).map((t) => ({
-        name: t,
-        slug: t.toLowerCase().replace(/\s+/g, "-"),
-      })),
-      originalArticleURL: canonicalUrl,
-      subtitle: post.frontmatter.description ?? "",
-    },
-  };
-
-  const response = await fetch("https://gql.hashnode.com", {
-    method: "POST",
-    headers: {
-      Authorization: HASHNODE_PAT,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query: mutation, variables }),
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Hashnode publishPost failed (${response.status}): ${text}`);
-  }
-
-  const data = (await response.json()) as HashnodeApiResponse;
-
-  if (data.errors && data.errors.length > 0) {
-    throw new Error(`Hashnode GraphQL error: ${data.errors.map((e) => e.message).join(", ")}`);
-  }
-
-  const postId = data.data?.publishPost?.post?.id;
-  if (!postId) {
-    throw new Error("Hashnode publishPost returned no post ID");
-  }
-
-  return postId;
-}
-
-async function updateOnHashnode(postId: string, post: Post, canonicalUrl: string, markdown: string): Promise<void> {
-  const mutation = `
-    mutation UpdatePost($input: UpdatePostInput!) {
-      updatePost(input: $input) {
-        post {
-          id
-          url
-        }
-      }
-    }
-  `;
-
-  const variables: HashnodeUpdateVariables = {
-    input: {
-      id: postId,
-      title: post.frontmatter.title,
-      contentMarkdown: markdown,
-      tags: (post.frontmatter.tags ?? []).map((t) => ({
-        name: t,
-        slug: t.toLowerCase().replace(/\s+/g, "-"),
-      })),
-      originalArticleURL: canonicalUrl,
-      subtitle: post.frontmatter.description ?? "",
-    },
-  };
-
-  const response = await fetch("https://gql.hashnode.com", {
-    method: "POST",
-    headers: {
-      Authorization: HASHNODE_PAT,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({ query: mutation, variables }),
-  });
-
-  if (!response.ok) {
-    const text = await response.text();
-    throw new Error(`Hashnode updatePost failed (${response.status}): ${text}`);
-  }
-
-  const data = (await response.json()) as HashnodeApiResponse;
-
-  if (data.errors && data.errors.length > 0) {
-    throw new Error(`Hashnode GraphQL error: ${data.errors.map((e) => e.message).join(", ")}`);
-  }
-}
-
-// ---------------------------------------------------------------------------
 // State helpers
 // ---------------------------------------------------------------------------
 
@@ -487,8 +348,6 @@ function saveState(state: CrossPostState): void {
 async function main(): Promise<void> {
   requireEnv("SITE_URL", SITE_URL);
   requireEnv("DEVTO_API_KEY", DEVTO_API_KEY);
-  requireEnv("HASHNODE_PAT", HASHNODE_PAT);
-  requireEnv("HASHNODE_PUBLICATION_ID", HASHNODE_PUBLICATION_ID);
 
   const targetSlug = process.argv[2] ?? null;
 
@@ -538,26 +397,6 @@ async function main(): Promise<void> {
       console.error(`  Dev.to ERROR:`, err instanceof Error ? err.message : err);
     }
 
-    // --- Hashnode ---
-    try {
-      if (!existing.hashnode) {
-        console.log("  Hashnode: publishing...");
-        const id = await publishToHashnode(post, canonicalUrl, markdown);
-        state[post.slug] = {
-          ...state[post.slug],
-          hashnode: { id, publishedAt: new Date().toISOString() },
-        };
-        console.log(`  Hashnode: published (id=${id})`);
-      } else {
-        console.log(`  Hashnode: updating (id=${existing.hashnode.id})...`);
-        await updateOnHashnode(existing.hashnode.id, post, canonicalUrl, markdown);
-        console.log("  Hashnode: updated");
-      }
-    } catch (err) {
-      hasErrors = true;
-      console.error(`  Hashnode ERROR:`, err instanceof Error ? err.message : err);
-    }
-
     // Save state after each post so partial progress is not lost on failure
     saveState(state);
 
@@ -571,7 +410,7 @@ async function main(): Promise<void> {
   console.log("\nDone. State saved to", STATE_FILE);
 
   // Medium reminder (no API — must import manually)
-  const newPosts = postsToProcess.filter((p) => !state[p.slug]?.devto || !state[p.slug]?.hashnode);
+  const newPosts = postsToProcess.filter((p) => !state[p.slug]?.devto);
   if (newPosts.length === 0 && postsToProcess.length > 0) {
     console.log("\nMedium reminder: Import new posts manually at https://medium.com/me/stories → Import a story → paste the canonical URL. Medium auto-sets the canonical.");
   }
