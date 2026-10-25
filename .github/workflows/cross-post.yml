@@ -31,11 +31,9 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Cross-Post to Dev.to + Hashnode
+      - name: Cross-Post to Dev.to
         env:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
-          HASHNODE_PAT: ${{ secrets.HASHNODE_PAT }}
-          HASHNODE_PUBLICATION_ID: ${{ secrets.HASHNODE_PUBLICATION_ID }}
           SITE_URL: ${{ vars.SITE_URL }}
         run: bun scripts/cross-post.ts ${{ github.event.inputs.post_slug || '' }}
 

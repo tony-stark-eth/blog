@@ -11,7 +11,7 @@ bun install && bun run dev
 
 Persönlicher Dev-Blog. Astro 5 + Tailwind 4 + TypeScript strict. Statische Seiten, kein JS-Framework.
 Posts in `src/content/blog/en/` (Englisch) und `src/content/blog/de/` (Deutsch) als Markdown.
-Cross-Post auf Dev.to + Hashnode via GitHub Actions (nur EN-Posts).
+Cross-Post auf Dev.to via GitHub Actions (nur EN-Posts). Hashnode entfernt (API seit Mai 2026 nur mit Pro-Plan).
 
 ## Commands
 
@@ -22,7 +22,7 @@ Cross-Post auf Dev.to + Hashnode via GitHub Actions (nur EN-Posts).
 | `bun run preview` | Preview des Production Builds |
 | `bunx astro check` | TypeScript + Astro Validation |
 | `bunx tsc --noEmit` | Strikte Type Checks |
-| `bun run cross-post` | Manuelles Cross-Posting auf Dev.to + Hashnode |
+| `bun run cross-post` | Manuelles Cross-Posting auf Dev.to |
 
 ## Guidelines
 
@@ -53,4 +53,4 @@ Lies `.claude/technical.md` für Code-Konventionen im Astro-Projekt.
 - Deutsch = `/de/blog/post-slug/`
 - Gleiche Dateinamen in `en/` und `de/` verknüpfen Sprachversionen
 - **Jeder Post MUSS in beiden Sprachen existieren** (EN + DE)
-- Cross-Post nur EN-Posts (Dev.to/Hashnode sind englischsprachig)
+- Cross-Post nur EN-Posts (Dev.to ist englischsprachig)

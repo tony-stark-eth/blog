@@ -16,7 +16,7 @@ bun run dev        # → http://localhost:4321
 | `bun run dev` | Dev server with HMR |
 | `bun run build` | Production build → `dist/` |
 | `bun run preview` | Preview production build |
-| `bun run cross-post` | Manual cross-post to Dev.to + Hashnode |
+| `bun run cross-post` | Manual cross-post to Dev.to |
 | `bunx astro check` | TypeScript + Astro validation |
 | `bunx tsc --noEmit` | Strict type checks |
 
@@ -26,7 +26,7 @@ bun run dev        # → http://localhost:4321
 - **Styling**: Tailwind 4 + `@tailwindcss/typography` (prose classes for Markdown)
 - **i18n**: English (default, no URL prefix) + German (`/de/` prefix)
 - **Hosting**: Cloudflare Pages (auto-deploy on push to main)
-- **Cross-posting**: Dev.to + Hashnode via GitHub Actions (canonical URL → own domain)
+- **Cross-posting**: Dev.to via GitHub Actions (canonical URL → own domain)
 - **Fonts**: Inter + JetBrains Mono (self-hosted via `@fontsource`)
 - **Dark mode**: Class-based toggle with `localStorage` persistence
 
@@ -73,7 +73,7 @@ draft: false
 ```
 
 2. Create the German version at `src/content/blog/de/YYYY-MM-slug.md` (same filename = linked translation, set `locale: "de"`)
-3. Push to main → auto-deploys to Cloudflare Pages → cross-posts EN version to Dev.to + Hashnode
+3. Push to main → auto-deploys to Cloudflare Pages → cross-posts EN version to Dev.to
 
 Every post **must** exist in both EN and DE.
 
@@ -82,7 +82,7 @@ Every post **must** exist in both EN and DE.
 | Workflow | Trigger | What it does |
 |---|---|---|
 | `deploy.yml` | Push to main | Build + deploy to Cloudflare Pages |
-| `cross-post.yml` | After successful deploy | Publish EN posts to Dev.to + Hashnode |
+| `cross-post.yml` | After successful deploy | Publish EN posts to Dev.to |
 | `ci.yml` | Pull request | `astro check` + `tsc --noEmit` + `build` |
 
 ## SEO
