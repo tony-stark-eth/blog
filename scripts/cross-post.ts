@@ -39,9 +39,16 @@ interface HashnodeState {
   publishedAt: string;
 }
 
+interface MastodonState {
+  id: string;
+  url: string;
+  publishedAt: string;
+}
+
 interface PostState {
   devto?: DevtoState;
   hashnode?: HashnodeState;
+  mastodon?: MastodonState;
 }
 
 interface CrossPostState {
@@ -73,6 +80,11 @@ interface DevtoApiResponse {
 
 const SITE_URL = (process.env.SITE_URL ?? "").replace(/\/$/, "");
 const DEVTO_API_KEY = process.env.DEVTO_API_KEY ?? "";
+const MASTODON_INSTANCE = (process.env.MASTODON_INSTANCE ?? "").replace(/\/$/, "");
+const MASTODON_TOKEN = process.env.MASTODON_TOKEN ?? "";
+
+// Only posts dated on or after this day are announced, so enabling Mastodon doesn't toot the back catalog.
+const MASTODON_SINCE = "2026-10-25";
 
 const STATE_FILE = ".cross-post-state.json";
 const CONTENT_DIR = "src/content/blog/en";
@@ -322,6 +334,54 @@ async function updateOnDevto(articleId: number, post: Post, canonicalUrl: string
 }
 
 // ---------------------------------------------------------------------------
+// Mastodon API (announce only, never updated)
+// ---------------------------------------------------------------------------
+
+interface MastodonStatusResponse {
+  id?: string;
+  url?: string;
+  error?: string;
+}
+
+async function waitUntilLive(url: string): Promise<void> {
+  // The deploy runs in parallel; Mastodon builds its link preview when the status is created.
+  for (let attempt = 1; attempt <= 20; attempt++) {
+    const response = await fetch(url, { method: "HEAD" });
+    if (response.ok) return;
+    console.log(`  Mastodon: ${url} not live yet (${response.status}), retry ${attempt}/20 in 30s...`);
+    await new Promise((resolve) => setTimeout(resolve, 30000));
+  }
+  throw new Error(`${url} still not live after 10 minutes`);
+}
+
+function buildMastodonStatus(post: Post, canonicalUrl: string): string {
+  const hashtags = (post.frontmatter.tags ?? []).map((t) => `#${t.replace(/[^a-zA-Z0-9]/g, "")}`).join(" ");
+  return `${post.frontmatter.title}\n\n${post.frontmatter.description ?? ""}\n\n${canonicalUrl}\n\n${hashtags}`.slice(0, 500);
+}
+
+async function announceOnMastodon(post: Post, canonicalUrl: string): Promise<MastodonState> {
+  await waitUntilLive(canonicalUrl);
+
+  const response = await fetch(`${MASTODON_INSTANCE}/api/v1/statuses`, {
+    method: "POST",
+    headers: {
+      Authorization: `Bearer ${MASTODON_TOKEN}`,
+      "Content-Type": "application/json",
+      // Mastodon dedupes retries with the same key for an hour
+      "Idempotency-Key": `blog-${post.slug}`,
+    },
+    body: JSON.stringify({ status: buildMastodonStatus(post, canonicalUrl), visibility: "public", language: "en" }),
+  });
+
+  const data = (await response.json()) as MastodonStatusResponse;
+  if (!response.ok || !data.id || !data.url) {
+    throw new Error(`Mastodon POST failed (${response.status}): ${data.error ?? "no status id"}`);
+  }
+
+  return { id: data.id, url: data.url, publishedAt: new Date().toISOString() };
+}
+
+// ---------------------------------------------------------------------------
 // State helpers
 // ---------------------------------------------------------------------------
 
@@ -395,6 +455,25 @@ async function main(): Promise<void> {
     } catch (err) {
       hasErrors = true;
       console.error(`  Dev.to ERROR:`, err instanceof Error ? err.message : err);
+    }
+
+    // --- Mastodon ---
+    if (!MASTODON_INSTANCE || !MASTODON_TOKEN) {
+      console.log("  Mastodon: skipped (MASTODON_INSTANCE / MASTODON_TOKEN not set)");
+    } else if (existing.mastodon) {
+      console.log(`  Mastodon: already announced (${existing.mastodon.url})`);
+    } else if (String(post.frontmatter.date) < MASTODON_SINCE) {
+      console.log(`  Mastodon: skipped (dated before ${MASTODON_SINCE})`);
+    } else {
+      try {
+        console.log("  Mastodon: announcing...");
+        const mastodon = await announceOnMastodon(post, canonicalUrl);
+        state[post.slug] = { ...state[post.slug], mastodon };
+        console.log(`  Mastodon: announced (${mastodon.url})`);
+      } catch (err) {
+        hasErrors = true;
+        console.error(`  Mastodon ERROR:`, err instanceof Error ? err.message : err);
+      }
     }
 
     // Save state after each post so partial progress is not lost on failure
