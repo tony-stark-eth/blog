@@ -31,9 +31,11 @@ jobs:
       - name: Install dependencies
         run: bun install --frozen-lockfile
 
-      - name: Cross-Post to Dev.to
+      - name: Cross-Post to Dev.to + Mastodon
         env:
           DEVTO_API_KEY: ${{ secrets.DEVTO_API_KEY }}
+          MASTODON_TOKEN: ${{ secrets.MASTODON_TOKEN }}
+          MASTODON_INSTANCE: ${{ vars.MASTODON_INSTANCE }}
           SITE_URL: ${{ vars.SITE_URL }}
         run: bun scripts/cross-post.ts ${{ github.event.inputs.post_slug || '' }}
 
