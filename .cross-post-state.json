@@ -93,6 +93,11 @@
     "devto": {
       "id": 4916681,
       "publishedAt": "2026-10-25T17:14:49.550Z"
+    },
+    "mastodon": {
+      "id": "117507625859517465",
+      "url": "https://phpc.social/@tony_stark_eth/117507625859517465",
+      "publishedAt": "2026-10-26T14:14:36.462Z"
     }
   }
 }
